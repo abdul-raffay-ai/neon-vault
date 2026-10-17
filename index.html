@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON//VAULT — Agent Zero</title>
+<style>
+:root{--bg:#080914;--panel:#121629;--cyan:#48f5ff;--purple:#c084fc;--muted:#aab3ce;--green:#5dffb0}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#211448,#080914 65%);color:#f7f8ff;font-family:system-ui,Arial,sans-serif;min-height:100vh}
+header{text-align:center;padding:30px 12px 16px}
+.logo{font-size:clamp(30px,8vw,52px);font-weight:1000;letter-spacing:2px;color:var(--cyan);text-shadow:0 0 25px #48f5ff66}
+.tag,.eyebrow{font-size:11px;letter-spacing:2px;color:var(--purple)}
+main{max-width:850px;margin:auto;padding:12px}
+.panel{background:#121629ed;border:1px solid #343957;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 12px 35px #0005}
+.hidden{display:none!important}
+h1{font-size:clamp(23px,5vw,32px);margin:10px 0}
+h1 span{color:var(--purple)}
+p{color:var(--muted);line-height:1.6}
+.status{padding:12px;background:#080c19;border:1px solid #252d49;border-radius:10px;margin:12px 0;color:var(--cyan);overflow-wrap:anywhere}
+.progress{height:7px;background:#262b43;border-radius:9px;overflow:hidden;margin:12px 0}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:.3s}
+input{width:100%;padding:14px;background:#080c19;border:1px solid #414969;border-radius:10px;color:white;font-size:17px;margin:8px 0}
+button{padding:12px 15px;background:#1a2340;border:1px solid #454e79;color:white;border-radius:10px;font-weight:750;cursor:pointer;margin:4px;max-width:100%}
+button:hover{border-color:var(--cyan);transform:translateY(-1px)}
+.primary{background:linear-gradient(100deg,#087e98,#6337a9);border:0;width:100%;margin:8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px}
+.tile{background:#0a1020;border:1px solid #303958;border-radius:13px;padding:14px;min-width:0}
+.tile h3{color:var(--cyan);font-size:16px;margin:4px 0}
+.tile p{font-size:13px;margin:5px 0}
+.tile button{width:100%;margin:8px 0 0}
+.small{font-size:12px}
+footer{text-align:center;color:#77819f;padding:25px;font-size:12px}
+#arena{margin-top:14px}
+.big{font-size:26px;font-weight:900;text-align:center;color:var(--cyan);padding:15px;overflow-wrap:anywhere}
+.choice{width:100%;text-align:left}
+#maze{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:300px;margin:15px auto}
+.cell{aspect-ratio:1;border-radius:6px;background:#222a45;display:grid;place-items:center;font-size:19px}
+.wall{background:#050711}.player{background:#087e98}.exit{background:#4a246c}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">NEON//VAULT</div>
+<div class="tag">CRACK THE CODE. UNLOCK THE CHAOS.</div>
+</header>
+<main>
+<section class="panel" id="vault">
+<div class="eyebrow">SECURE TERMINAL / AGENT TRAINING</div>
+<h1>SECRET <span>PROTOCOL</span></h1>
+<p>Ten missions. Increasing difficulty. One secret vault. Solve the puzzles to unlock the arcade.</p>
+<div class="status" id="progress">MISSION 01 / 10</div>
+<div class="progress"><div id="bar"></div></div>
+<h2 id="levelTitle">Mission 01</h2>
+<p id="question"></p>
+<div id="choices"></div>
+<input id="answer" placeholder="Enter your answer..." autocomplete="off">
+<button class="primary" id="submit">SUBMIT ANSWER ↗</button>
+<button id="hintBtn">REVEAL HINT</button>
+<div class="status" id="feedback" aria-live="polite">Awaiting agent input...</div>
+</section>
+
+<section class="panel hidden" id="victory">
+<div class="eyebrow">ALL TEN MISSIONS CLEARED</div>
+<h1>VAULT <span>UNLOCKED!</span> 🔓</h1>
+<p>Agent, you've cracked every code. Your reward awaits.</p>
+<div class="status">10 / 10 MISSIONS COMPLETE</div>
+<button class="primary" id="unlock">ENTER CHAOS ARCADE ⚡</button>
+<button id="replay">REPLAY ALL MISSIONS</button>
+</section>
+
+<section class="panel hidden" id="arcade">
+<div class="eyebrow">ACCESS GRANTED / WELCOME AGENT</div>
+<h1>INTERNET <span>CHAOS ARCADE</span></h1>
+<p>Ten mini-games. Endless chaos. Pick your challenge.</p>
+<div class="grid">
+<div class="tile"><h3>01 · Don't Click It</h3><p>Can you resist the forbidden button?</p><button onclick="play('dont')">PLAY</button></div>
+<div class="tile"><h3>02 · Reflex Rush</h3><p>React when the signal turns green.</p><button onclick="play('reflex')">PLAY</button></div>
+<div class="tile"><h3>03 · Brain Glitch</h3><p>Crack the tricky riddle.</p><button onclick="play('brain')">PLAY</button></div>
+<div class="tile"><h3>04 · Random Chaos</h3><p>Get a random silly challenge.</p><button onclick="play('chaos')">PLAY</button></div>
+<div class="tile"><h3>05 · Memory Overload</h3><p>Remember the flashing sequence.</p><button onclick="play('memory')">PLAY</button></div>
+<div class="tile"><h3>06 · Type or Die</h3><p>Type the code before time runs out.</p><button onclick="play('type')">PLAY</button></div>
+<div class="tile"><h3>07 · Math Mayhem</h3><p>Beat the rapid-fire math challenge.</p><button onclick="play('math')">PLAY</button></div>
+<div class="tile"><h3>08 · Maze Escape</h3><p>Navigate the maze to the exit.</p><button onclick="play('maze')">PLAY</button></div>
+<div class="tile"><h3>09 · Tap Frenzy</h3><p>Hit as many targets as you can.</p><button onclick="play('tap')">PLAY</button></div>
+<div class="tile"><h3>10 · Glitch Detective</h3><p>Spot the odd symbol out.</p><button onclick="play('glitch')">PLAY</button></div>
+</div>
+<div class="status" id="gameStatus">Choose a game above to begin.</div>
+<div id="arena"></div>
+<button id="back">← BACK TO ARCADE</button>
+</section>
+</main>
+<footer>NEON//VAULT · FICTIONAL GAME EXPERIENCE · PLAY FAIR, THINK SMART</footer>
+<script>
+const missions=[
+{q:"A code has three digits. The digits add up to 9. The first is twice the second, and the third is three more than the second. What is the code?",a:["423"],h:"Let the second digit be x. The digits are 2x, x, and x+3."},
+{q:"Find the next number: 2, 6, 12, 20, 30, ?",a:["42"],h:"These are products of consecutive numbers: 1×2, 2×3, 3×4..."},
+{q:"A clock shows 3:15. What is the smaller angle between its hands, in degrees?",a:["7.5"],h:"The minute hand is at 90°. The hour hand has moved a quarter of the way from 3 to 4."},
+{q:"Decode this Caesar cipher by shifting each letter BACK by 1: DBU",a:["cat"],h:"Move each letter one position backward in the alphabet."},
+{q:"You have 8 identical-looking balls. One is heavier. What is the minimum number of balance-scale weighings needed to guarantee finding it?",a:["2","two"],h:"Split the balls into groups of 3, 3, and 2."},
+{q:"A farmer has 17 sheep. All but 9 run away. How many remain?",a:["9","nine"],h:"Read the words carefully: 'all but 9'."},
+{q:"Complete the sequence: 1, 11, 21, 1211, 111221, ?",a:["312211"],h:"Describe the digits in the previous number aloud."},
+{q:"If 5 machines make 5 widgets in 5 minutes, how many minutes do 100 machines need to make 100 widgets?",a:["5","five"],h:"Each machine makes one widget in five minutes."},
+{q:"A number is between 1 and 100. It is divisible by 3 and 5, but not by 2. What is the largest possible number?",a:["75"],h:"Find the largest odd multiple of 15 below 100."},
+{q:"Final cipher: Reverse the letters in 'NOHTYP' to reveal the programming language.",a:["python"],h:"Read the six letters from right to left."}
+];
+let level=0,hinted=false;
+const $=id=>document.getElementById(id);
+function renderMission(){
+$("progress").textContent="MISSION "+String(level+1).padStart(2,"0")+" / 10";
+$("bar").style.width=(level/10*100)+"%";
+$("levelTitle").textContent="Mission "+String(level+1).padStart(2,"0");
+$("question").textContent=missions[level].q;
+$("answer").value="";$("feedback").textContent="Awaiting agent input...";
+$("hintBtn").textContent="REVEAL HINT";
+$("choices").innerHTML="";hinted=false;
+}
+$("submit").onclick=()=>{
+let v=$("answer").value.trim().toLowerCase();
+if(!v){$("feedback").textContent="Enter your answer first.";return}
+if(missions[level].a.includes(v)){
+level++;
+if(level===10){
+$("vault").classList.add("hidden");$("victory").classList.remove("hidden");$("bar").style.width="100%";
+}else{renderMission();$("feedback").textContent="Correct! Mission cleared."}
+}else{$("feedback").textContent="Incorrect. Think carefully and try again."}
+};
+$("answer").addEventListener("keydown",e=>{if(e.key==="Enter")$("submit").click()});
+$("hintBtn").onclick=()=>{$("feedback").textContent="HINT: "+missions[level].h;$("hintBtn").textContent="HINT SHOWN"};
+$("replay").onclick=()=>{level=0;$("victory").classList.add("hidden");$("vault").classList.remove("hidden");renderMission()};
+$("unlock").onclick=()=>{$("victory").classList.add("hidden");$("arcade").classList.remove("hidden")};
+$("back").onclick=()=>{$("arena").innerHTML="";$("gameStatus").textContent="Choose a game above to begin."};
+renderMission();
+
+let timer=null,gameToken=0;
+function stopGame(){gameToken++;if(timer)clearInterval(timer);timer=null}
+function status(s){$("gameStatus").textContent=s}
+function arena(html){$("arena").innerHTML=html}
+function btn(label,fn){let b=document.createElement("button");b.textContent=label;b.onclick=fn;return b}
+function play(name){
+stopGame();const token=gameToken;arena("");status("GAME: "+name.toUpperCase());
+if(name==="dont"){
+status("Whatever you do... don't press the red button.");
+arena('<div class="big">⚠️ FORBIDDEN BUTTON</div><button class="primary" id="forbidden">DO NOT CLICK</button>');
+$("forbidden").onclick=()=>{status("YOU CLICKED IT 😂 Chaos wins. Try again!");$("forbidden").textContent="YOU DID IT AGAIN?";};return;
+}
+if(name==="reflex"){
+status("Wait for green. Tap too early and you lose.");
+arena('<button class="primary" id="signal">WAIT...</button><div class="big" id="reaction">Ready?</div>');
+let started=0,done=false;
+$("signal").onclick=()=>{
+if(done){play("reflex");return}
+if(started){done=true;status("Reaction time: "+(Date.now()-started)+" ms");$("reaction").textContent="NICE REFLEX!";$("signal").textContent="PLAY AGAIN";return}
+if($("signal").textContent!=="WAIT..."){status("Too early! Try again.");$("signal").textContent="RETRY";return}
+$("signal").textContent="HOLD...";
+timer=setTimeout(()=>{if(token!==gameToken)return;started=Date.now();$("signal").textContent="TAP NOW!";$("signal").style.background="#087b48"},1000+Math.random()*3000);
+};return;
+}
+if(name==="brain"){
+let qs=[["What has keys but opens no locks?","piano"],["What gets wetter as it dries?","towel"],["What has a face and two hands but no arms or legs?","clock"],["What has many teeth but cannot bite?","comb"]];
+let q=qs[Math.floor(Math.random()*qs.length)];
+arena('<p id="riddle"></p><input id="brainAnswer" placeholder="Your answer"><button class="primary" id="brainCheck">CHECK ANSWER</button>');
+$("riddle").textContent=q[0];
+$("brainCheck").onclick=()=>status($("brainAnswer").value.trim().toLowerCase()===q[1]?"Correct! Brain power activated.":"Not quite. Answer: "+q[1]+". Play again for another riddle.");return;
+}
+if(name==="chaos"){
+let tasks=["Do your best robot impression for 5 seconds.","Find something blue near you.","Say the alphabet backwards as far as you can.","Invent a superhero name in 10 seconds.","Make up a secret agent codename.","Name 5 animals in 5 seconds.","Describe your day using 3 emojis.","Think of a word that rhymes with 'light'.","Do 3 silly facial expressions.","Create a new handshake in your imagination."];
+arena('<div class="big" id="chaosText">READY FOR CHAOS?</div><button class="primary" id="chaosBtn">GENERATE CHALLENGE</button>');
+$("chaosBtn").onclick=()=>{$("chaosText").textContent=tasks[Math.floor(Math.random()*tasks.length)]};return;
+}
+if(name==="memory"){memoryGame(token);return}
+if(name==="type"){typeGame(token);return}
+if(name==="math"){mathGame(token);return}
+if(name==="maze"){mazeGame(token);return}
+if(name==="tap"){tapGame(token);return}
+if(name==="glitch"){glitchGame(token);return}
+}
+function memoryGame(token){
+let seq=[],pos=0,round=0;
+arena('<div class="big" id="memDisplay">Watch the sequence</div><div class="grid" id="memGrid"></div><button id="memStart">START</button>');
+let colors=["CYAN","PURPLE","GREEN","ORANGE"];
+let grid=$("memGrid");
+colors.forEach((c,i)=>{let b=btn(c,()=>pick(i));b.style.width="100%";b.style.minHeight="65px";b.style.background=["#087e98","#6337a9","#087849","#99541c"][i];grid.appendChild(b)});
+function nextRound(){round++;pos=0;seq.push(Math.floor(Math.random()*4));$("memDisplay").textContent="ROUND "+round+" — WATCH!";let j=0;let iv=setInterval(()=>{if(token!==gameToken){clearInterval(iv);return}$("memDisplay").textContent=colors[seq[j]];j++;if(j>=seq.length){clearInterval(iv);setTimeout(()=>{$("memDisplay").textContent="YOUR TURN";},350)}},650)}
+function pick(i){if(token!==gameToken)return;if(i!==seq[pos]){status("Game over! You reached round "+round+". Play again to beat your score.");return}pos++;if(pos===seq.length){if(round===8){status("Amazing! You completed all 8 memory rounds.");return}setTimeout(nextRound,500)}}
+$("memStart").onclick=()=>{seq=[];round=0;nextRound()};return;
+}
+function typeGame(token){
+let words=["NEONVAULT","CYBERAGENT","GLITCHMODE","ACCESSGRANTED","PROTOCOLZERO"];
+let word=words[Math.floor(Math.random()*words.length)];
+arena('<div class="big" id="typeWord"></div><p>Type the exact code within 12 seconds.</p><input id="typeInput" autocomplete="off"><div id="typeTime" class="status">12 seconds left</div><button class="primary" id="typeCheck">SUBMIT CODE</button>');
+$("typeWord").textContent=word;let left=12;$("typeInput").focus();
+timer=setInterval(()=>{if(token!==gameToken)return;left--;$("typeTime").textContent=left+" seconds left";if(left<=0){stopGame();status("Time up! The code was "+word);}},1000);
+$("typeCheck").onclick=()=>{if($("typeInput").value===word){stopGame();status("Perfect typing! Code accepted.")}else status("Incorrect code. Check every letter.")};return;
+}
+function mathGame(token){
+let n=0,score=0;
+function question(){n++;if(n>5){status("Math Mayhem complete! Score: "+score+"/5");arena('<button class="primary" onclick="play(\\'math\\')">PLAY AGAIN</button>');return}
+let a=2+Math.floor(Math.random()*19),b=2+Math.floor(Math.random()*12),op=Math.random()<.5?"+":"×",ans=op==="+"?a+b:a*b;
+arena('<div class="big" id="mathQ"></div><input id="mathInput" type="number" placeholder="Answer"><button class="primary" id="mathSubmit">SUBMIT</button>');
+$("mathQ").textContent="Question "+n+"/5: "+a+" "+op+" "+b;
+$("mathSubmit").onclick=()=>{if(Number($("mathInput").value)===ans){score++;status("Correct! Score "+score+"/5")}else status("Not quite! Answer: "+ans);setTimeout(question,650)};
+}
+question();
+}
+function mazeGame(token){
+let walls=[1,3,5,6,8,11,13,16,18,21,23],pos=0,goal=24;
+arena('<p>Use the arrows to reach the purple exit. Avoid the walls.</p><div id="maze"></div><div style="text-align:center"><button id="up">⬆️</button><br><button id="left">⬅️</button><button id="down">⬇️</button><button id="right">➡️</button></div>');
+function draw(){let m=$("maze");m.innerHTML="";for(let i=0;i<25;i++){let d=document.createElement("div");d.className="cell"+(walls.includes(i)?" wall":"")+(i===pos?" player":"")+(i===goal?" exit":"");d.textContent=i===pos?"🕵️":i===goal?"🚪":walls.includes(i)?"■":"";m.appendChild(d)}}
+function move(dx,dy){let x=pos%5,y=Math.floor(pos/5),nx=x+dx,ny=y+dy;if(nx<0||nx>4||ny<0||ny>4)return;let np=ny*5+nx;if(walls.includes(np)){status("Blocked! Find another route.");return}pos=np;draw();if(pos===goal)status("Maze escaped! Agent wins!")}
+$("up").onclick=()=>move(0,-1);$("down").onclick=()=>move(0,1);$("left").onclick=()=>move(-1,0);$("right").onclick=()=>move(1,0);draw();
+}
+function tapGame(token){
+let score=0,left=15;
+arena('<div class="big" id="tapScore">SCORE: 0</div><button class="primary" id="tapTarget">TAP TARGET!</button><div class="status" id="tapTimer">15 seconds</div>');
+$("tapTarget").onclick=()=>{if(token!==gameToken||left<=0)return;score++;$("tapScore").textContent="SCORE: "+score};
+timer=setInterval(()=>{if(token!==gameToken)return;left--;$("tapTimer").textContent=left+" seconds";if(left<=0){stopGame();status("Time! Your Tap Frenzy score: "+score)}},1000);
+}
+function glitchGame(token){
+let symbols=["◆","◆","◆","◆","◇","◆","◆","◆","◆"];
+for(let i=symbols.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[symbols[i],symbols[j]]=[symbols[j],symbols[i]]}
+arena('<p>Tap the one symbol that is different.</p><div class="grid" id="glitchGrid"></div>');
+let g=$("glitchGrid");symbols.forEach((s,i)=>{let b=btn(s,()=>{if(s==="◇"){status("Correct! Glitch identified.");}else status("Not that one. Look carefully for the different shape.")});b.style.fontSize="25px";b.style.width="100%";g.appendChild(b)});
+}
+</script>
+</body>
+</html>
